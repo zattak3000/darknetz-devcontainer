@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "cost_layer.h": "c",
+        "image.h": "c",
+        "blas_ta.h": "c",
+        "parser_ta.h": "c",
+        "darknetp_ta.h": "c",
+        "darknet_ta.h": "c",
+        "aes_ta.h": "c"
+    }
+    // "files.exclude": {
+    //     "**/*.o": true
+    // }
+}

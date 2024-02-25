@@ -1,0 +1,86 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "inputs": [
+        {
+            "id": "Pi_IP",
+            "type": "promptString",
+            "description": "Enter IP address of Raspberry Pi",
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Upload to Pi over SSH",
+            "type": "shell",
+            "dependsOn": [
+                "Make",
+                "Upload Binary",
+                "Upload TA"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "Upload Binary",
+            "type": "shell",
+            "hide": true,
+            "command": "scp ${workspaceFolder}/host/optee_example_darknetp root@${input:Pi_IP}:/usr/bin/darknetp && ssh root@${input:Pi_IP} chmod +x /usr/bin/darknetp",
+            "problemMatcher": []
+        },
+        {
+            "label": "Upload TA",
+            "type": "shell",
+            "hide": true,
+            "command": "scp ${workspaceFolder}/ta/7fc5c039-0542-4ee1-80af-b4eab2f1998d.ta root@${input:Pi_IP}:/lib/optee_armtz/ && ssh root@${input:Pi_IP} chmod 444 /lib/optee_armtz/7fc5c039-0542-4ee1-80af-b4eab2f1998d.ta",
+            "problemMatcher": []
+        },
+        {
+            "label": "Make",
+            "type": "shell",
+            "dependsOn":[
+                "Make Binary",
+                "Make TA"
+            ],
+            "dependsOrder": "parallel",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Make Binary",
+            "type": "shell",
+            "command": "make -C host CROSS_COMPILE=aarch64-linux-gnu- --no-builtin-variables -j$(nproc)",
+            "problemMatcher": [
+                {
+                    "base": "$gcc",
+                    "fileLocation":[
+                        "relative",
+                        "${workspaceFolder}/host"
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Make TA",
+            "type": "shell",
+            "command": "make -C ta CROSS_COMPILE=aarch64-linux-gnu- -j$(nproc)",
+            "problemMatcher": [
+                {
+                    "base": "$gcc",
+                    "fileLocation":[
+                        "relative",
+                        "${workspaceFolder}/ta"
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "make clean",
+            "problemMatcher": []
+        }
+    ]
+}

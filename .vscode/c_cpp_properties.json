@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "/optee/optee_os/out/arm/export-ta_arm64/include/**",
+                "/optee/optee_client/out/export/usr/include",
+                "${workspaceFolder}/ta/**",
+                "${workspaceFolder}/host/**"
+            ],
+            "defines": [],
+            "compilerPath": "/optee/toolchains/aarch64/bin/aarch64-linux-gnu-gcc",
+            "cStandard": "c11",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-arm64"
+        }
+    ],
+    "version": 4
+}
