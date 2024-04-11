@@ -39,6 +39,7 @@
 
 #include "main.h"
 
+#include "pdjson.h"
 
 int count_global = 0;
 int partition_point1 = 0;
@@ -967,39 +968,128 @@ network *parse_network_cfg(char *filename)
     return net;
 }
 
-list *read_cfg(char *filename)
-{
+// list *read_cfg(char *filename)
+// {
+//     FILE *file = fopen(filename, "r");
+//     if(file == 0) file_error(filename);
+//     char *line;
+//     int nu = 0;
+//     list *options = make_list();
+//     section *current = 0;
+//     while((line=fgetl(file)) != 0){
+//         ++ nu;
+//         strip(line);
+//         switch(line[0]){
+//             case '[':
+//                 current = malloc(sizeof(section));
+//                 list_insert(options, current);
+//                 current->options = make_list();
+//                 current->type = line;
+//                 break;
+//             case '\0':
+//             case '#':
+//             case ';':
+//                 free(line);
+//                 break;
+//             default:
+//                 if(!read_option(line, current->options)){
+//                     fprintf(stderr, "Config file error line %d, could parse: %s\n", nu, line);
+//                     free(line);
+//                 }
+//                 break;
+//         }
+//     }
+//     fclose(file);
+//     return options;
+// }
+
+list *read_cfg(char *filename) {
     FILE *file = fopen(filename, "r");
     if(file == 0) file_error(filename);
-    char *line;
-    int nu = 0;
-    list *options = make_list();
-    section *current = 0;
-    while((line=fgetl(file)) != 0){
-        ++ nu;
-        strip(line);
-        switch(line[0]){
-            case '[':
-                current = malloc(sizeof(section));
-                list_insert(options, current);
-                current->options = make_list();
-                current->type = line;
-                break;
-            case '\0':
-            case '#':
-            case ';':
-                free(line);
-                break;
-            default:
-                if(!read_option(line, current->options)){
-                    fprintf(stderr, "Config file error line %d, could parse: %s\n", nu, line);
-                    free(line);
-                }
-                break;
-        }
+
+    list *layers = make_list();
+
+    json_stream stream[1];
+
+    json_open_stream(stream, file);
+
+    enum json_type status = json_next(stream);
+    if (status != JSON_ARRAY) {
+        printf("Configuration file must be an array.\n");
+        exit(1);
     }
+
+    section *layer;
+
+    do
+    {
+        status = json_next(stream);
+
+        if (status == JSON_ARRAY) continue;
+
+        if (json_get_depth(stream) > 2) {
+            printf("Too many nested objects on line %ld", json_get_lineno(stream));
+            exit(1);
+        }
+
+        if (status == JSON_OBJECT)
+        {
+            // Make new layer
+            layer = malloc(sizeof(section));
+            layer->options = make_list();
+            layer->type = malloc(sizeof(char) * 40);
+            continue;
+        }
+        
+        
+        // if (json_get_string(stream, NULL)[0] == '\0') {
+        //     json_next(stream);
+        //     continue;
+        // }        
+
+        parse_pair(stream, layer);
+
+        if (json_peek(stream) == JSON_OBJECT_END)
+        {
+            // Finish layer if at the end of the object
+            json_next(stream);
+            list_insert(layers, layer);
+            continue;
+        }
+
+    } while (status != JSON_ARRAY_END);
+    
     fclose(file);
-    return options;
+    return layers;
+}
+
+void parse_pair(json_stream *stream, section *layer)
+{
+    char *key = malloc(sizeof(char) * 41); 
+    char *val = malloc(sizeof(char) * 41);
+
+    strncpy(key, json_get_string(stream, NULL), 40);
+
+    if (json_peek(stream) == JSON_OBJECT_END)
+    {
+        printf("Error on line %ld", json_get_lineno(stream));
+        exit(1);
+    }
+
+    json_next(stream);
+
+    strncpy(val, json_get_string(stream, NULL), 40);
+
+    // If key is layer set the type
+    if (strncmp(key, "layer", 40) == 0) {
+        snprintf(layer->type, 40, "[%s]", val);
+        free(key);
+        free(val);
+        return;
+    }
+
+    // If not, insert an option
+    option_insert(layer->options, key, val);
 }
 
 void save_convolutional_weights_binary(layer l, FILE *fp)

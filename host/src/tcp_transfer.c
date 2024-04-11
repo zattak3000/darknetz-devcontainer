@@ -9,26 +9,26 @@
 
 // client side
 
-//读写数据大小
+// Read/write data size
 #define MAX_LINE 4096
-//监听端口
-#define LINSTENPORT 8080
-//服务器端口
+// Listening port
+#define LISTENPORT 8080
+// Server port
 #define SERVERPORT 8080
-//缓存大小
+// Buffer size
 #define BUFFSIZE 4096
 
 
 void writefile(int sockfd, char *recv_file)
 {
-        char filename[BUFFSIZE] = {0}; //文件名
+        char filename[BUFFSIZE] = {0}; // Filename
         if (recv(sockfd, filename, BUFFSIZE, 0) == -1) //connfd
         {
                 perror("Can't receive filename");
                 exit(1);
         }
 
-        //创建文件
+        // Create file
         FILE *fp = fopen(recv_file, "wb");          //filename
         if (fp == NULL)
         {
@@ -108,13 +108,13 @@ void sendfile(int sockfd, char *file_name)
                 memset(sendline, 0, MAX_LINE); //清空暂存字符串
         }
 
-        //关闭文件和套接字
+        // Close files and sockets
         fclose(fp);
 }
 
 int tcp_transfer(char *file_dir, char *op)
 {
-        //创建TCP套接字
+        // Create a TCP socket
         int sockfd = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd == -1)
         {
@@ -122,40 +122,40 @@ int tcp_transfer(char *file_dir, char *op)
                 exit(1);
         }
 
-        //配置服务器套接字地址
+        // Configure server socket addresses
         struct sockaddr_in clientaddr, serveraddr;
         memset(&serveraddr, 0, sizeof(serveraddr));
         serveraddr.sin_family = AF_INET;
         serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
         serveraddr.sin_port = htons(SERVERPORT);
 
-        //绑定套接字与地址
+        // Bind sockets to addresses
         if (bind(sockfd, (const struct sockaddr *) &serveraddr, sizeof(serveraddr)) == -1)
         {
                 perror("Bind Error");
                 exit(1);
         }
 
-        //转换为监听套接字
-        if (listen(sockfd, LINSTENPORT) == -1)
+        // Convert to a listening socket
+        if (listen(sockfd, LISTENPORT) == -1)
         {
                 perror("Listen Error");
                 exit(1);
         }
 
-        //等待连接完成
+        //Wait for the connection to complete
         socklen_t addrlen = sizeof(clientaddr);
 
         // proper server
 
-        int connfd = accept(sockfd, (struct sockaddr *) &clientaddr, &addrlen);          //已连接套接字
+        int connfd = accept(sockfd, (struct sockaddr *) &clientaddr, &addrlen);          // Connected socket
         if (connfd == -1)
         {
                 perror("Connect Error");
                 exit(1);
         }
 
-        close(sockfd);                          //关闭监听套接字
+        close(sockfd);                          // Close listening socket
 
         if(strcmp(op, "receive") == 0) {
                 writefile(connfd, file_dir);

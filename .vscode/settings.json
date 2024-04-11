@@ -6,7 +6,11 @@
         "parser_ta.h": "c",
         "darknetp_ta.h": "c",
         "darknet_ta.h": "c",
-        "aes_ta.h": "c"
+        "aes_ta.h": "c",
+        "utils.h": "c",
+        "list.h": "c",
+        "darknet.h": "c",
+        "option_list.h": "c"
     }
     // "files.exclude": {
     //     "**/*.o": true
