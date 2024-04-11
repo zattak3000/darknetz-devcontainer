@@ -1,0 +1,4 @@
+Host rpi3
+    HostName <ip>
+    Port 22
+    User root

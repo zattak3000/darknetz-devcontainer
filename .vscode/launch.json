@@ -1,0 +1,45 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "inputs": [
+        {
+            "id": "Pi_IP",
+            "type": "promptString",
+            "description": "Enter IP address of Raspberry Pi",
+        },
+        {
+            "id": "Pi_GDBSERVER_PORT",
+            "type": "promptString",
+            "default": "12345",
+            "description": "Enter gdbserver port of Raspberry Pi"
+        }
+    ],
+    "configurations": [
+        {
+            "name": "(gdb) gdbserver",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/host/optee_example_darknetp",
+            "useExtendedRemote": true,
+            "cwd": ".",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb-multiarch",
+            // "miDebuggerServerAddress": "localhost:12345",
+            "miDebuggerServerAddress": "${input:Pi_IP}:${input:Pi_GDBSERVER_PORT}",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+        }
+    ]
+}

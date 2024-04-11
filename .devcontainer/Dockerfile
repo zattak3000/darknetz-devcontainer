@@ -24,6 +24,7 @@ RUN apt install -y \
     flex \
     ftp-upload \
     gdisk \
+    gdb-multiarch \
     git \
     libattr1-dev \
     libcap-ng-dev \

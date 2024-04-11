@@ -22,7 +22,7 @@ EXECOBJS = $(addprefix $(EXECSCR), $(EXECOBJ))
 
 EXECMAIN = main.o
 
-CFLAGS += -Wall -I../ta/include -I$(TEEC_EXPORT)/include -I./include
+CFLAGS += -g -Wall -I../ta/include -I$(TEEC_EXPORT)/include -I./include
 CFLAGS += -Iinclude/ -Isrc/ -Iexamples/  -I./src/ -I./examples/
 
 #Add/link other required libraries here
@@ -37,7 +37,7 @@ all: $(BINARY)
 
 $(BINARY): $(EXECMAIN) $(EXECOBJS) $(OBJS)
 	#$(CC) $(CFLAGS) -g $^ -o $@ $(LDFLAGS) $(LDADD) $(ALIB)
-	$(CC) -o $@ $^ $(LDFLAGS) $(LDADD)
+	$(CC) -g -o $@ $^ $(LDFLAGS) $(LDADD)
 
 #$(ALIB): $(OBJS)
 #	$(AR) $(ARFLAGS) $@ $^

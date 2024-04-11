@@ -2,19 +2,6 @@
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
     "version": "2.0.0",
-    "inputs": [
-        {
-            "id": "Pi_IP",
-            "type": "promptString",
-            "description": "Enter IP address of Raspberry Pi",
-        },
-        {
-            "id": "Pi_PORT",
-            "type": "promptString",
-            "default": "22",
-            "description": "Enter SSH port of Raspberry Pi"
-        }
-    ],
     "tasks": [
         {
             "label": "Upload to Pi over SSH",
@@ -31,14 +18,14 @@
             "label": "Upload Binary",
             "type": "shell",
             "hide": true,
-            "command": "scp -P ${input:Pi_PORT} ${workspaceFolder}/host/optee_example_darknetp root@${input:Pi_IP}:/usr/bin/darknetp && ssh -p ${input:Pi_PORT} root@${input:Pi_IP} chmod +x /usr/bin/darknetp",
+            "command": "scp -F ${workspaceFolder}/ssh_config ${workspaceFolder}/host/optee_example_darknetp rpi3:/usr/bin/darknetp && ssh -F ${workspaceFolder}/ssh_config rpi3 chmod +x /usr/bin/darknetp",
             "problemMatcher": []
         },
         {
             "label": "Upload TA",
             "type": "shell",
             "hide": true,
-            "command": "scp -P ${input:Pi_PORT} ${workspaceFolder}/ta/7fc5c039-0542-4ee1-80af-b4eab2f1998d.ta root@${input:Pi_IP}:/lib/optee_armtz/ && ssh -p ${input:Pi_PORT} root@${input:Pi_IP} chmod 444 /lib/optee_armtz/7fc5c039-0542-4ee1-80af-b4eab2f1998d.ta",
+            "command": "scp -F ${workspaceFolder}/ssh_config ${workspaceFolder}/ta/7fc5c039-0542-4ee1-80af-b4eab2f1998d.ta rpi3:/lib/optee_armtz/ && ssh -F ${workspaceFolder}/ssh_config rpi3 chmod 444 /lib/optee_armtz/7fc5c039-0542-4ee1-80af-b4eab2f1998d.ta",
             "problemMatcher": []
         },
         {
