@@ -66,7 +66,7 @@ RUN git clone https://github.com/OP-TEE/optee_os
 RUN git clone https://github.com/OP-TEE/optee_client
 
 WORKDIR /optee/build
-RUN make -f rpi3.mk -j2 toolchains
+RUN make -f rpi3.mk -j2 aarch32-toolchain aarch64-toolchain
 
 ENV PATH="${PATH}:/optee/toolchains/aarch64/bin:/optee/toolchains/aarch32/bin"
 

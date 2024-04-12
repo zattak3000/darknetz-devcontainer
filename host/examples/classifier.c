@@ -750,8 +750,6 @@ void predict_classifier(char *datacfg, char *cfgfile, char *weightfile, char *fi
 
                 top_k(predictions, net->outputs, top, indexes);
 
-                free(net_output_back);
-
                 struct rusage usage;
                 struct timeval startu, endu, starts, ends;
 
@@ -810,7 +808,8 @@ void predict_classifier(char *datacfg, char *cfgfile, char *weightfile, char *fi
                 getMemory(output_file);
 
                 fclose(output_file);
-
+                free(net_output_back);
+                
                 if(r.data != im.data) free_image(r);
                 free_image(im);
                 if (filename) break;

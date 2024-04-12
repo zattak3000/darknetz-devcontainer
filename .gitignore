@@ -1,0 +1,10 @@
+**/*.o
+**/*.o.*
+host/optee_example_darknetp
+ta/*.elf
+ta/*.map
+ta/*.dmp
+ta/*.ta
+ta/dyn_list
+ta/ta.lds
+ta/.ta.ld.d
