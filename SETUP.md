@@ -79,7 +79,20 @@ iface eth0 inet static
     netmask 255.255.0.0
 ```
 
-### Disable `dhcpcd`
+### Fix network init script
+
+The `/etc/init.d/S40network` script attempts to bring up all network interfaces before the `lan78xx` kernel driver sets up the ethernet device, this is enough to fix it.
+
+Add these lines to the top of `/etc/init.d/S40network`:
+
+```bash
+while [ ! -e /sys/class/net/eth0 ]; do
+        echo "Waiting for eth0 to come up"
+        sleep 1
+done
+```
+
+### Disable `dhcpcd` (Optional)
 
 I'm not *totally* sure if this is required, but sometimes the Pi's Ethernet interface doesn't come up after booting. I don't know if this is caused by `dhcpcd` trying to override the static address but since we aren't using DHCP in this setup I just turn it off to be safe.
 
