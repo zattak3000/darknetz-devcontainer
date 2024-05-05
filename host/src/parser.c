@@ -1014,6 +1014,10 @@ list *read_cfg(char *filename) {
     json_open_stream(stream, file);
 
     enum json_type status = json_next(stream);
+    if (status == JSON_ERROR) {
+        printf("JSON Parsing Error: %s", stream->errmsg);
+    }
+
     if (status != JSON_ARRAY) {
         printf("Configuration file must be an array.\n");
         exit(1);
@@ -1024,6 +1028,11 @@ list *read_cfg(char *filename) {
     do
     {
         status = json_next(stream);
+        if (status == JSON_ERROR) {
+            printf("JSON Parsing Error in %s:\n", filename);
+            printf("%s\n", stream->errmsg);
+            exit(1);
+        }
 
         if (status == JSON_ARRAY) continue;
 
